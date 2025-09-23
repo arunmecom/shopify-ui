@@ -1,0 +1,256 @@
+---
+title: "Introduction to ShopifyUI"
+description: "Learn about ShopifyUI, a comprehensive UI component library for Shopify applications."
+date: "2024-01-10"
+---
+
+# Introduction to ShopifyUI
+
+Welcome to ShopifyUI, a comprehensive UI component library and design system built specifically for Shopify applications. Whether you're building a Shopify app, customizing a theme, or creating a storefront, ShopifyUI provides the tools you need to create beautiful, accessible, and performant user interfaces.
+
+## What is ShopifyUI?
+
+ShopifyUI is a collection of reusable React components that follow Shopify's design principles and accessibility guidelines. It's built on top of modern web technologies and provides:
+
+- **Production-ready components** for common UI patterns
+- **Accessibility-first design** that works for all users
+- **TypeScript support** for better developer experience
+- **Customizable theming** to match your brand
+- **Performance optimization** for fast loading times
+- **Comprehensive documentation** with examples and best practices
+
+## Why Choose ShopifyUI?
+
+### Built for Shopify
+
+Unlike generic UI libraries, ShopifyUI is specifically designed for Shopify applications. Our components:
+
+- Follow Shopify's design guidelines
+- Integrate seamlessly with Shopify's APIs
+- Support Shopify-specific features like Polaris integration
+- Handle Shopify's data structures natively
+
+### Developer Experience
+
+We prioritize developer experience with:
+
+- **Clear APIs**: Intuitive component props and methods
+- **TypeScript**: Full type safety and autocomplete support
+- **Documentation**: Comprehensive guides and examples
+- **Testing**: Built-in testing utilities and examples
+- **Performance**: Optimized for speed and efficiency
+
+### Accessibility
+
+Accessibility is built into every component:
+
+- **WCAG 2.1 AA compliant** components
+- **Keyboard navigation** support
+- **Screen reader** compatibility
+- **Focus management** for better UX
+- **Color contrast** that meets standards
+
+## Getting Started
+
+### Installation
+
+Install ShopifyUI using your preferred package manager:
+
+```bash
+npm install @shopifyui/core @shopifyui/components
+```
+
+### Basic Usage
+
+```jsx
+import { Button, Card, Input } from '@shopifyui/components';
+
+function MyComponent() {
+  return (
+    <Card>
+      <Card.Header>
+        <h2>Welcome to ShopifyUI</h2>
+      </Card.Header>
+      <Card.Content>
+        <Input placeholder="Enter your name" />
+        <Button>Get Started</Button>
+      </Card.Content>
+    </Card>
+  );
+}
+```
+
+### Theming
+
+Customize the appearance of components using our theming system:
+
+```jsx
+import { ThemeProvider } from '@shopifyui/core';
+
+const customTheme = {
+  colors: {
+    primary: '#0070f3',
+    secondary: '#7928ca',
+  },
+  spacing: {
+    sm: '8px',
+    md: '16px',
+    lg: '24px',
+  },
+};
+
+function App() {
+  return (
+    <ThemeProvider theme={customTheme}>
+      <MyComponent />
+    </ThemeProvider>
+  );
+}
+```
+
+## Component Categories
+
+### Form Components
+
+Build forms with our comprehensive form components:
+
+- **Input**: Text, email, password, and number inputs
+- **Select**: Dropdown and multi-select components
+- **Checkbox**: Single and group checkboxes
+- **Radio**: Radio button groups
+- **Switch**: Toggle switches
+- **Button**: Various button styles and states
+
+### Layout Components
+
+Structure your application with layout components:
+
+- **Card**: Content containers with headers and footers
+- **Grid**: Responsive grid system
+- **Stack**: Vertical and horizontal stacking
+- **Container**: Responsive containers
+- **Divider**: Visual separators
+
+### Navigation Components
+
+Create intuitive navigation experiences:
+
+- **Navigation**: Main navigation menus
+- **Breadcrumb**: Navigation breadcrumbs
+- **Tabs**: Tabbed interfaces
+- **Pagination**: Page navigation
+- **Sidebar**: Collapsible sidebars
+
+### Feedback Components
+
+Provide user feedback with these components:
+
+- **Alert**: Success, warning, and error messages
+- **Toast**: Temporary notifications
+- **Modal**: Dialog boxes and overlays
+- **Loading**: Loading indicators and skeletons
+- **Progress**: Progress bars and spinners
+
+### Data Display Components
+
+Present data effectively:
+
+- **Table**: Sortable and filterable tables
+- **List**: Item lists with various layouts
+- **Badge**: Status indicators and labels
+- **Avatar**: User profile images
+- **Tooltip**: Contextual information
+
+## Best Practices
+
+### Component Composition
+
+Build complex interfaces by composing simple components:
+
+```jsx
+function UserProfile({ user }) {
+  return (
+    <Card>
+      <Card.Header>
+        <Avatar src={user.avatar} />
+        <div>
+          <h3>{user.name}</h3>
+          <Badge variant="success">Active</Badge>
+        </div>
+      </Card.Header>
+      <Card.Content>
+        <Stack spacing="md">
+          <Input label="Email" value={user.email} readOnly />
+          <Input label="Phone" value={user.phone} readOnly />
+        </Stack>
+      </Card.Content>
+    </Card>
+  );
+}
+```
+
+### Error Handling
+
+Always handle errors gracefully:
+
+```jsx
+function DataTable({ data, error, loading }) {
+  if (loading) return <Loading />;
+  if (error) return <Alert variant="error">{error.message}</Alert>;
+  if (!data) return <Alert variant="warning">No data available</Alert>;
+  
+  return <Table data={data} />;
+}
+```
+
+### Performance Optimization
+
+Optimize your components for performance:
+
+```jsx
+import { memo, useMemo } from 'react';
+
+const ExpensiveComponent = memo(function ExpensiveComponent({ data }) {
+  const processedData = useMemo(() => {
+    return data.map(item => ({
+      ...item,
+      processed: expensiveOperation(item)
+    }));
+  }, [data]);
+
+  return <Table data={processedData} />;
+});
+```
+
+## Community and Support
+
+### Getting Help
+
+- **Documentation**: Comprehensive guides and API references
+- **GitHub**: Report issues and contribute to the project
+- **Discord**: Join our community for real-time help
+- **Stack Overflow**: Tag questions with `shopifyui`
+
+### Contributing
+
+We welcome contributions! Check out our [contributing guide](https://github.com/shopifyui/shopifyui/blob/main/CONTRIBUTING.md) to get started.
+
+### Roadmap
+
+Stay updated on upcoming features and improvements:
+
+- **v2.1**: Advanced form validation
+- **v2.2**: Data visualization components
+- **v2.3**: Mobile-specific components
+- **v3.0**: Major architecture improvements
+
+## Next Steps
+
+Ready to start building? Here's what to do next:
+
+1. **[Installation Guide](/docs/installation)**: Set up ShopifyUI in your project
+2. **[Quick Start](/docs/quick-start)**: Build your first component
+3. **[Component Reference](/components)**: Explore all available components
+4. **[Examples](/examples)**: See ShopifyUI in action
+
+Welcome to the ShopifyUI community! We're excited to see what you'll build. 🚀
