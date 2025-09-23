@@ -104,8 +104,8 @@ export default async function BlogPost({ params }) {
         <div className="space-y-4">
           {post.categories && post.categories.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {post.categories.map((category) => (
-                <Badge key={category.slug?.current} variant="secondary">
+              {post.categories.map((category, index) => (
+                <Badge key={category.slug?.current || `category-${index}`} variant="secondary">
                   {category.title}
                 </Badge>
               ))}
@@ -127,7 +127,7 @@ export default async function BlogPost({ params }) {
             </div>
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
-              {new Date(post.publishedAt).toLocaleDateString()}
+              {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'No date'}
             </div>
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-2" />

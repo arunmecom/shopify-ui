@@ -54,13 +54,13 @@ export default async function BlogPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
-              <Card key={post.slug} className="hover:shadow-lg transition-shadow">
+              <Card key={post._id || post.slug?.current || `post-${Math.random()}`} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between mb-2">
                     <Badge variant="secondary">{post.readingTime || '5 min read'}</Badge>
                     <div className="flex items-center text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4 mr-1" />
-                      {new Date(post.publishedAt).toLocaleDateString()}
+                      {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'No date'}
                     </div>
                   </div>
                   <CardTitle className="text-xl">{post.title}</CardTitle>
