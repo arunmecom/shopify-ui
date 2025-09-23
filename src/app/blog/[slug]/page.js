@@ -53,12 +53,8 @@ async function getPostSlugs() {
   }
 }
 
-export async function generateStaticParams() {
-  const slugs = await getPostSlugs();
-  return slugs.map((slug) => ({
-    slug: slug,
-  }));
-}
+// Removed generateStaticParams to make all blog posts fully dynamic
+// This ensures new posts appear immediately without any caching delays
 
 export async function generateMetadata({ params }) {
   const post = await getPostBySlug(params.slug);

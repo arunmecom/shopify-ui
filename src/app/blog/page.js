@@ -9,7 +9,7 @@ async function getAllPosts() {
   try {
     const client = safeClient();
     const posts = await client.fetch(`
-      *[_type == "post"] | order(publishedAt desc) {
+      *[_type == "post" && defined(publishedAt)] | order(publishedAt desc) {
         _id,
         title,
         slug,
