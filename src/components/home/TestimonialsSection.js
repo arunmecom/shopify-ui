@@ -64,20 +64,20 @@ export function TestimonialsSection() {
   const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <section className="py-12 md:py-24 lg:py-32 bg-muted/50">
-      <div className="container space-y-8">
-        <div className="text-center">
-          <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+    <section className="py-16 md:py-24 lg:py-32 bg-muted/50">
+      <div className="container mx-auto px-4 space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="font-bold tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
             Loved by Developers
           </h2>
-          <p className="leading-7 text-muted-foreground mt-4 max-w-[85%] mx-auto">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             See what developers are saying about ShopifyUI
           </p>
         </div>
 
         <div className="relative max-w-4xl mx-auto">
           <Card className="border-2">
-            <CardContent className="p-8">
+            <CardContent className="p-8 md:p-12">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">

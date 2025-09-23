@@ -43,27 +43,27 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-12 md:py-24 lg:py-32">
-      <div className="container space-y-8">
-        <div className="text-center">
-          <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+    <section className="py-16 md:py-24 lg:py-32">
+      <div className="container mx-auto px-4 space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="font-bold tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
             Why Choose ShopifyUI?
           </h2>
-          <p className="leading-7 text-muted-foreground mt-4 max-w-[85%] mx-auto">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Everything you need to build modern, accessible, and beautiful Shopify applications.
           </p>
         </div>
         
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
-            <Card key={feature.title} className="relative overflow-hidden border-2 hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="flex items-center space-x-2">
+            <Card key={feature.title} className="relative overflow-hidden border-2 hover:border-primary/50 transition-colors h-full">
+              <CardHeader className="pb-4">
+                <div className="flex items-center space-x-3">
                   <feature.icon className="h-6 w-6 text-primary" />
                   <CardTitle className="text-xl">{feature.title}</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-0">
                 <CardDescription className="text-base leading-relaxed">
                   {feature.description}
                 </CardDescription>
@@ -72,8 +72,8 @@ export function FeaturesSection() {
           ))}
         </div>
         
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
+        <div className="text-center space-y-4">
+          <p className="text-lg text-muted-foreground">
             Ready to get started? Check out our comprehensive documentation and start building.
           </p>
         </div>

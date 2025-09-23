@@ -119,4 +119,24 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Improved typography and spacing */
+  
+  /* Better container spacing */
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Improved prose styling */
+  .prose {
+    @apply text-foreground;
+  }
+  
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    @apply text-foreground font-bold tracking-tight;
+  }
+  
+  .prose p {
+    @apply text-muted-foreground leading-relaxed;
+  }
 }
