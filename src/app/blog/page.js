@@ -3,10 +3,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../..
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Calendar, Clock, User } from 'lucide-react';
-import { getAllPosts } from '../../lib/mdx';
+import { client } from '../../sanity/lib/client';
 
-export default function BlogPage() {
-  const posts = getAllPosts('blog');
+async function getAllPosts() {
+  try {
+    const posts = await client.fetch(`
+      *[_type == "post"] | order(publishedAt desc) {
+        _id,
+        title,
+        slug,
+        excerpt,
+        publishedAt,
+        author->{
+          name,
+          image
+        },
+        mainImage,
+        categories[]->{
+          title,
+          slug
+        },
+        readingTime
+      }
+    `)
+    return posts || []
+  } catch (error) {
+    console.error('Error fetching posts from Sanity:', error)
+    return []
+  }
+}
+
+export default async function BlogPage() {
+  const posts = await getAllPosts();
+  console.log('🔍 [BlogPage] Final posts received:', posts);
+  console.log('🔍 [BlogPage] Posts length:', posts.length);
 
   return (
     <div className="container py-8">
@@ -28,37 +58,37 @@ export default function BlogPage() {
               <Card key={post.slug} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary">{post.frontmatter.readingTime || '5 min read'}</Badge>
+                    <Badge variant="secondary">{post.readingTime || '5 min read'}</Badge>
                     <div className="flex items-center text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4 mr-1" />
-                      {new Date(post.frontmatter.date).toLocaleDateString()}
+                      {new Date(post.publishedAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <CardTitle className="text-xl">{post.frontmatter.title}</CardTitle>
+                  <CardTitle className="text-xl">{post.title}</CardTitle>
                   <CardDescription className="text-base">
-                    {post.frontmatter.description}
+                    {post.excerpt || 'No excerpt available'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center">
                       <User className="h-4 w-4 mr-1" />
-                      {post.frontmatter.author}
+                      {post.author?.name || 'Anonymous'}
                     </div>
                   </div>
                   
-                  {post.frontmatter.tags && (
+                  {post.categories && post.categories.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {post.frontmatter.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
+                      {post.categories.map((category) => (
+                        <Badge key={category.slug?.current} variant="outline" className="text-xs">
+                          {category.title}
                         </Badge>
                       ))}
                     </div>
                   )}
                   
                   <Button asChild className="w-full">
-                    <Link href={`/blog/${post.slug}`}>
+                    <Link href={`/blog/${post.slug?.current}`}>
                       Read More
                     </Link>
                   </Button>
