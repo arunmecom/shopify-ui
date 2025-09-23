@@ -5,7 +5,7 @@ import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import { getPostBySlug, getAllPosts, getRelatedPosts } from '../../../lib/mdx';
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { marked } from 'marked';
 
 export async function generateStaticParams() {
   const posts = getAllPosts('blog');
@@ -91,7 +91,12 @@ export default function BlogPost({ params }) {
         {/* Article Content */}
         <Card>
           <CardContent className="prose prose-lg max-w-none py-8">
-            <MDXRemote source={post.content} />
+            <div 
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ 
+                __html: marked(post.content) 
+              }} 
+            />
           </CardContent>
         </Card>
 
