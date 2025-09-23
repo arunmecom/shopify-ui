@@ -1,11 +1,13 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent } from '../../../components/ui/card';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import { PortableText } from '@portabletext/react';
 import { safeClient } from '../../../sanity/lib/client';
+import { urlFor } from '../../../sanity/lib/image';
 
 async function getPostBySlug(slug) {
   try {
@@ -22,7 +24,13 @@ async function getPostBySlug(slug) {
           bio,
           image
         },
-        mainImage,
+        mainImage{
+          asset->{
+            _id,
+            url
+          },
+          alt
+        },
         categories[]->{
           title,
           slug
@@ -57,7 +65,8 @@ async function getPostSlugs() {
 // This ensures new posts appear immediately without any caching delays
 
 export async function generateMetadata({ params }) {
-  const post = await getPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
   
   if (!post) {
     return {
@@ -79,7 +88,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function BlogPost({ params }) {
-  const post = await getPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
   
   if (!post) {
     notFound();
@@ -97,7 +107,7 @@ export default async function BlogPost({ params }) {
         </Button>
 
         {/* Article Header */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {post.categories && post.categories.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.categories.map((category, index) => (
@@ -108,18 +118,18 @@ export default async function BlogPost({ params }) {
             </div>
           )}
           
-          <h1 className="text-4xl font-bold">{post.title}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight">{post.title}</h1>
           
           {post.excerpt && (
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               {post.excerpt}
             </p>
           )}
           
-          <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center">
               <User className="h-4 w-4 mr-2" />
-              {post.author?.name || 'Anonymous'}
+              <span className="font-medium">{post.author?.name || 'Anonymous'}</span>
             </div>
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
@@ -132,9 +142,23 @@ export default async function BlogPost({ params }) {
           </div>
         </div>
 
+        {/* Main Image */}
+        {post.mainImage?.asset?.url && (
+          <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden shadow-lg">
+            <Image
+              src={urlFor(post.mainImage).width(1200).height(600).url()}
+              alt={post.mainImage.alt || post.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+            />
+          </div>
+        )}
+
         {/* Article Content */}
-        <Card>
-          <CardContent className="prose prose-lg max-w-none py-8">
+        <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50">
+          <CardContent className="prose prose-lg max-w-none py-8 px-8">
             <PortableText value={post.body} />
           </CardContent>
         </Card>
