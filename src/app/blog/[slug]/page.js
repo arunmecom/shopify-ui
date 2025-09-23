@@ -5,10 +5,11 @@ import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import { PortableText } from '@portabletext/react';
-import { client } from '../../../sanity/lib/client';
+import { safeClient } from '../../../sanity/lib/client';
 
 async function getPostBySlug(slug) {
   try {
+    const client = safeClient();
     const post = await client.fetch(`
       *[_type == "post" && slug.current == $slug][0] {
         _id,
@@ -39,6 +40,7 @@ async function getPostBySlug(slug) {
 
 async function getPostSlugs() {
   try {
+    const client = safeClient();
     const slugs = await client.fetch(`
       *[_type == "post"] {
         "slug": slug.current

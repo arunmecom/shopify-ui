@@ -3,10 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../..
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Calendar, Clock, User } from 'lucide-react';
-import { client } from '../../sanity/lib/client';
+import { safeClient } from '../../sanity/lib/client';
 
 async function getAllPosts() {
   try {
+    const client = safeClient();
     const posts = await client.fetch(`
       *[_type == "post"] | order(publishedAt desc) {
         _id,
@@ -35,8 +36,6 @@ async function getAllPosts() {
 
 export default async function BlogPage() {
   const posts = await getAllPosts();
-  console.log('🔍 [BlogPage] Final posts received:', posts);
-  console.log('🔍 [BlogPage] Posts length:', posts.length);
 
   return (
     <div className="container py-8">
