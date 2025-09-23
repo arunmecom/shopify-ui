@@ -4,18 +4,64 @@ import { Card, CardContent } from '../../../components/ui/card';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
-import { getPostBySlug, getAllPosts, getRelatedPosts } from '../../../lib/mdx';
-import { marked } from 'marked';
+import { PortableText } from '@portabletext/react';
+import { safeClient } from '../../../sanity/lib/client';
+
+async function getPostBySlug(slug) {
+  try {
+    const client = safeClient();
+    const post = await client.fetch(`
+      *[_type == "post" && slug.current == $slug][0] {
+        _id,
+        title,
+        slug,
+        excerpt,
+        publishedAt,
+        author->{
+          name,
+          bio,
+          image
+        },
+        mainImage,
+        categories[]->{
+          title,
+          slug
+        },
+        body,
+        readingTime
+      }
+    `, { slug })
+    return post
+  } catch (error) {
+    console.error('Error fetching post from Sanity:', error)
+    return null
+  }
+}
+
+async function getPostSlugs() {
+  try {
+    const client = safeClient();
+    const slugs = await client.fetch(`
+      *[_type == "post"] {
+        "slug": slug.current
+      }
+    `)
+    return slugs.map(item => item.slug)
+  } catch (error) {
+    console.error('Error fetching post slugs from Sanity:', error)
+    return []
+  }
+}
 
 export async function generateStaticParams() {
-  const posts = getAllPosts('blog');
-  return posts.map((post) => ({
-    slug: post.slug,
+  const slugs = await getPostSlugs();
+  return slugs.map((slug) => ({
+    slug: slug,
   }));
 }
 
 export async function generateMetadata({ params }) {
-  const post = getPostBySlug(params.slug, 'blog');
+  const post = await getPostBySlug(params.slug);
   
   if (!post) {
     return {
@@ -24,26 +70,24 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: post.frontmatter.title,
-    description: post.frontmatter.description,
+    title: post.title,
+    description: post.excerpt || `Read ${post.title} on our blog`,
     openGraph: {
-      title: post.frontmatter.title,
-      description: post.frontmatter.description,
+      title: post.title,
+      description: post.excerpt || `Read ${post.title} on our blog`,
       type: 'article',
-      publishedTime: post.frontmatter.date,
-      authors: [post.frontmatter.author],
+      publishedTime: post.publishedAt,
+      authors: [post.author?.name],
     },
   };
 }
 
-export default function BlogPost({ params }) {
-  const post = getPostBySlug(params.slug, 'blog');
+export default async function BlogPost({ params }) {
+  const post = await getPostBySlug(params.slug);
   
   if (!post) {
     notFound();
   }
-
-  const relatedPosts = getRelatedPosts(params.slug, 'blog', 3);
 
   return (
     <div className="container py-8">
@@ -58,28 +102,32 @@ export default function BlogPost({ params }) {
 
         {/* Article Header */}
         <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {post.frontmatter.tags?.map((tag) => (
-              <Badge key={tag} variant="secondary">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+          {post.categories && post.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {post.categories.map((category) => (
+                <Badge key={category.slug?.current} variant="secondary">
+                  {category.title}
+                </Badge>
+              ))}
+            </div>
+          )}
           
-          <h1 className="text-4xl font-bold">{post.frontmatter.title}</h1>
+          <h1 className="text-4xl font-bold">{post.title}</h1>
           
-          <p className="text-xl text-muted-foreground">
-            {post.frontmatter.description}
-          </p>
+          {post.excerpt && (
+            <p className="text-xl text-muted-foreground">
+              {post.excerpt}
+            </p>
+          )}
           
           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
             <div className="flex items-center">
               <User className="h-4 w-4 mr-2" />
-              {post.frontmatter.author}
+              {post.author?.name || 'Anonymous'}
             </div>
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
-              {new Date(post.frontmatter.date).toLocaleDateString()}
+              {new Date(post.publishedAt).toLocaleDateString()}
             </div>
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-2" />
@@ -91,38 +139,9 @@ export default function BlogPost({ params }) {
         {/* Article Content */}
         <Card>
           <CardContent className="prose prose-lg max-w-none py-8">
-            <div 
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ 
-                __html: marked(post.content) 
-              }} 
-            />
+            <PortableText value={post.body} />
           </CardContent>
         </Card>
-
-        {/* Related Posts */}
-        {relatedPosts.length > 0 && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold">Related Posts</h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {relatedPosts.map((relatedPost) => (
-                <Card key={relatedPost.slug} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold mb-2">{relatedPost.frontmatter.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {relatedPost.frontmatter.description}
-                    </p>
-                    <Button asChild size="sm" className="w-full">
-                      <Link href={`/blog/${relatedPost.slug}`}>
-                        Read More
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Back to Blog */}
         <div className="text-center">
