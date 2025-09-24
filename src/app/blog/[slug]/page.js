@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,10 +11,7 @@ import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import { PortableText } from '@portabletext/react';
 import { safeClient } from '../../../sanity/lib/client';
 import { urlFor } from '../../../sanity/lib/image';
-
-// Force dynamic rendering - disable static generation and caching
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+import { portableTextComponents } from '../../../components/portableText/PortableTextComponents';
 
 async function getPostBySlug(slug) {
   try {
@@ -68,32 +68,43 @@ async function getPostSlugs() {
 // Removed generateStaticParams to make all blog posts fully dynamic
 // This ensures new posts appear immediately without any caching delays
 
-export async function generateMetadata({ params }) {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
-  
-  if (!post) {
-    return {
-      title: 'Post Not Found',
-    };
+
+export default function BlogPost({ params }) {
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [slug, setSlug] = useState(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const resolvedParams = await params;
+        const resolvedSlug = resolvedParams.slug;
+        setSlug(resolvedSlug);
+        
+        const postData = await getPostBySlug(resolvedSlug);
+        setPost(postData);
+      } catch (error) {
+        console.error('Error loading post:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadData();
+  }, [params]);
+
+  if (loading) {
+    return (
+      <div className="container py-8">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
-
-  return {
-    title: post.title,
-    description: post.excerpt || `Read ${post.title} on our blog`,
-    openGraph: {
-      title: post.title,
-      description: post.excerpt || `Read ${post.title} on our blog`,
-      type: 'article',
-      publishedTime: post.publishedAt,
-      authors: [post.author?.name],
-    },
-  };
-}
-
-export default async function BlogPost({ params }) {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
   
   if (!post) {
     notFound();
@@ -163,7 +174,10 @@ export default async function BlogPost({ params }) {
         {/* Article Content */}
         <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50">
           <CardContent className="prose prose-lg max-w-none py-8 px-8">
-            <PortableText value={post.body} />
+            <PortableText 
+              value={post.body} 
+              components={portableTextComponents}
+            />
           </CardContent>
         </Card>
 
