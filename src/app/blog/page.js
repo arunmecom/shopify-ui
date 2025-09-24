@@ -7,6 +7,10 @@ import { Calendar, Clock, User } from 'lucide-react';
 import { safeClient } from '../../sanity/lib/client';
 import { urlFor } from '../../sanity/lib/image';
 
+// Force dynamic rendering - disable static generation and caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getAllPosts() {
   try {
     const client = safeClient();
