@@ -14,6 +14,20 @@ const nextConfig = {
   experimental: {
     mdxRs: true,
   },
+  // Add cache-busting headers for blog pages to ensure fresh content
+  async headers() {
+    return [
+      {
+        source: '/blog/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 const withMDX = createMDX({

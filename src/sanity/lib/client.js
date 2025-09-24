@@ -7,7 +7,10 @@ export const client = projectId ? createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: false, // Set to false for development to avoid caching issues
+  // Use CDN in production for better performance, but disable for development
+  useCdn: process.env.NODE_ENV === 'production' ? true : false,
+  // Add token for write operations if available
+  token: process.env.SANITY_API_TOKEN,
 }) : null
 
 // Helper function to safely use the client
